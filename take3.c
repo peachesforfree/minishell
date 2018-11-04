@@ -287,11 +287,33 @@ char        **tlst_to_char_arry(t_list *list)
     return (temp);
 }
 
+char        *find_in_path(t_list *list, char **args)
+{
+    char    *path;
+
+    //here given a list of paths
+    //search each one (using opendir, readdir, closedir) if they compare with the executable in args[0]
+    //if a match is found
+        //make the proper exec path and return it
+    return (path);
+}
+
 char        find_path(t_env *env)
 {
+    char    *result;
+    t_list  *path_list;
+
+    path_list = NULL;
+    result = NULL;
+    path_list = ft_strsplit( ft_strchr(/*find PATH in list and return content*/,  "="), ':');
+    if (path_list)
+    {
+        result = find_in_path(path_list, env->argument_ptr);
     //first check if it is a path to a file (allocate memory for the string)
     //this is to look through all of the items in path and compare with the first one in t_list *arguments
     //if its in a path variable. then compose the absolute path (allocate memory)
+    }
+    return (result);
 }
 int         execute_command(t_env *env)
 {
