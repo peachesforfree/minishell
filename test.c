@@ -6,24 +6,50 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "libft/libft.h"
+//#include "libft/libft.h"
 
-
-
-
-int main(int argc, char **argv, char **environ)
+int     ft_strlen(char *str)
 {
-    int i;
-    char **ret;
+    int     i;
 
     i = 0;
-    ret = parse(argv[1]);
+    while (str[i] != '\0')
+        i++;
+    return (i);
+}
 
-//    while (ret[i] != NULL)
-//    {
-//        printf("%s\n", ret[i]);
-//        i++;
-//    }
+/*
+    char **temp[1];
+        \/
+       0 [][][][][][][][]
+       1 [][][][][][][][]
+       2 [][][][][][][][]
+       3 [N][U][L][L][L][][][]
+
+*/
+
+char    **make_str_ptr(int  count)
+{
+    char    **temp;
+
+    temp = (char**)malloc(sizeof(char**) * count + 1);
+    temp[count] = NULL;
+    return (temp);
+}
+
+int main(int argc, char **argv)
+{
+   char     **oranges;
+
+   oranges = make_str_ptr(argc);
 
     return (0);
 }
+
+/*
+
+
+
+
+
+*/
