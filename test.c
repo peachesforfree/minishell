@@ -6,16 +6,11 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-<<<<<<< HEAD
-#include "libft/libft.h"
-#include <sys/types.h>
-=======
 //#include "libft/libft.h"
 
 int     ft_strlen(char *str)
 {
     int     i;
->>>>>>> 09338966b4f29436927db52aceb9aa69177838d5
 
     i = 0;
     while (str[i] != '\0')

@@ -1,23 +1,3 @@
-<<<<<<< HEAD
-#include "/libft/libft.h"
-
-typedef struct      s_env
-{
-    char            **user_in;
-    char            **environ;
-    char            *buffer;
-    int             buffer_size;
-}                   t_env;
-
-
-
-int         main(int argc, char **argv, char **environ)
-{
-
-
-
-}
-=======
 #include "includes/mini_shell.h"
 #include <stdio.h>
 #include <fcntl.h> //open write close
@@ -484,4 +464,3 @@ int         main(int argc, char **argv, char **environ)
  * 
  * 
  * **********************/
->>>>>>> 09338966b4f29436927db52aceb9aa69177838d5
