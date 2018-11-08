@@ -13,7 +13,7 @@ INCLUDE = -I.
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
-
+	
 $(NAME):
 	make -C libft
 	$(CC) $(FLAGS) $(FILES) $(INCLUDE) $(LIBS)

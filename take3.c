@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <dirent.h>
+
 #include <sys/wait.h>
 
 
@@ -239,27 +241,27 @@ int     put_test(t_env *env, char *str)
     return (1);
 }
 
-int     forkin_time(char *path, char **arguments, char **envp)
-{
-    //need to create absolute path of executable
-    //need to generate a char** pointer to the argv
-    int         status;
-    pid_t       pid;
+// int     forkin_time(char *path, char **arguments, char **envp)
+// {
+//     //need to create absolute path of executable
+//     //need to generate a char** pointer to the argv
+//     int         status;
+//     pid_t       pid;
 
-    pid = fork ();
-    if (pid == 0)       /* This is the child process.  Execute the shell command. */
-    {
-        execve();
-        //execl (SHELL, SHELL, "-c", command, NULL);
-        exit (EXIT_FAILURE);
-    }
-    else if (pid < 0)   /* The fork failed.  Report failure.  */
-        status = -1;
-    else                /* This is the parent process.  Wait for the child to complete.  */
-        if (waitpid (pid, &status, 0) != pid)
-            status = -1;
-    return (status);
-}
+//     pid = fork ();
+//     if (pid == 0)       /* This is the child process.  Execute the shell command. */
+//     {
+//         execve();
+//         //execl (SHELL, SHELL, "-c", command, NULL);
+//         exit (EXIT_FAILURE);
+//     }
+//     else if (pid < 0)   /* The fork failed.  Report failure.  */
+//         status = -1;
+//     else                /* This is the parent process.  Wait for the child to complete.  */
+//         if (waitpid (pid, &status, 0) != pid)
+//             status = -1;
+//     return (status);
+// }
 
 char        **tlst_to_char_arry(t_list *list)
 {
@@ -269,7 +271,7 @@ char        **tlst_to_char_arry(t_list *list)
 
     count = 0;
     current = list;
-    while (temp != NULL)
+    while (current != NULL)
     {
         current = current->next;
         count++;
@@ -287,55 +289,126 @@ char        **tlst_to_char_arry(t_list *list)
     return (temp);
 }
 
-char        *find_in_path(t_list *list, char **args)
+int        check_directory(DIR *directory, t_list *list)
 {
-    char    *path;
+    char            *str;
+    struct dirent   *file;
 
-    //here given a list of paths
-    //search each one (using opendir, readdir, closedir) if they compare with the executable in args[0]
-    //if a match is found
-        //make the proper exec path and return it
-    return (path);
+    str = list->content;
+    while ((file = readdir(directory)) != NULL)
+    {
+        if (ft_strstr(file->d_name, str) && ft_strlen(str) == ft_strlen(file->d_name))
+            return (1);
+    }
+    return (0);
 }
 
-char        find_path(t_env *env)
+int         char_count(char *str, char c)
 {
-    char    *result;
-    t_list  *path_list;
+    int     i;
+    int     count;
 
-    path_list = NULL;
-    result = NULL;
-    path_list = ft_strsplit( ft_strchr(/*find PATH in list and return content*/,  "="), ':');
-    if (path_list)
+    i = 0;
+    count = 0;
+    while (str[i] != '\0')
     {
-        result = find_in_path(path_list, env->argument_ptr);
-    //first check if it is a path to a file (allocate memory for the string)
-    //this is to look through all of the items in path and compare with the first one in t_list *arguments
-    //if its in a path variable. then compose the absolute path (allocate memory)
+        if(str[i] == c)
+            count++;
+        i++;
+    }
+    return (count);
+}
+
+char        **assemble_env_list(char *str, char d, t_list *list)
+{
+    char    **result;
+    char    *temp;
+    int     temp_len;
+    int     word_count;
+    int     i;
+
+    i = 0;
+    result = NULL;
+    while (list != NULL)
+    {
+        if (ft_strcmp(list->content, str) == '=')
+        {
+            temp_len = 0;
+            temp = ft_strchr(list->content, '=') + 1;
+            if (char_count(temp, d) == 0)
+                return (NULL);
+            word_count = char_count(temp, d);
+            result = (char**)ft_memalloc(sizeof(char*) * word_count + 1);
+            while(temp[0] != '\0' && i < word_count)
+            {
+                temp_len = ft_strchr(temp, d) - temp;
+                result[i] = ft_strnew(temp_len);
+                ft_strncpy(result[i], temp, temp_len);
+                temp += temp_len + 1;
+                i++;
+            }
+            return (result);
+        }
+        list = list->next;
     }
     return (result);
 }
+
+
+char        *find_path(t_env *env)  //here need to find if the first argument is an alias for what is in the paths
+{
+    char            **path_list;
+    DIR             *directory;
+    char            *abs_path;
+    t_list          *temp;
+    int             i;
+
+    i = 0;
+    abs_path = NULL;
+    path_list = assemble_env_list("PATH", ':', env->environ);
+    while (path_list[i] != NULL)
+    {
+        directory = opendir(path_list[i]);
+        if (check_directory(directory, env->arguments))
+        {
+            temp = env->arguments;
+            abs_path = ft_strjoin(path_list[i], "\"");
+            abs_path = ft_strnjoin(abs_path, temp->content, 1);
+            //produce complete path with executable at end
+            //free path_list at end
+            return(abs_path);
+        }
+        closedir(directory);
+        i++;
+    }
+    return (NULL);
+}
+
 int         execute_command(t_env *env)
 {
     int     ret;
     char    *path;
-    t_list  *temp;
+    //t_list  *temp;
 
     ret = 0;
     // if (argv_ptr[0] != NULL && is_builtin(argv_ptr[0]))
     // {
     //     ret = (g_func[is_builtin(argv_ptr[0])])(env, argv_ptr);
     // }
-    // else if (argv_ptr[0] != NULL)
+    // else if ((access(argv_ptr[0], X_OK) == 0))
+    //       forkin_time(EXEC PATH, ARGV PTR, ENV);
+    // else if (argv_ptr[0] != NULL) //maybe change to list count more than 1
     // {
-        temp = env->arguments;
         path = find_path(env);
-        env->arguments_ptr = tlst_to_char_arry(env->arguments);
-    
-        forkin_time(path, env->arguments_ptr, env->environ)
-        //free(arguments);
+        //env->argument_ptr = tlst_to_char_arry(env->arguments);
+        //forkin_time(path, env->argument_ptr, env->environ);
+        //free(env->arguments_ptr);
+        //env->arguments_ptr = NULL;
+        //free(path);
 
     // }
+    // else
+    //  printf("Error path not found\n");
     //free path, arguments, envp
     return (ret);
 }
@@ -367,6 +440,8 @@ int         event_loop(t_env *env)
 int         main(int argc, char **argv, char **environ)
 {
     t_env   env;
+    (void)argc;
+    (void)argv;
 
     env_init(&env, environ);
     if (event_loop(&env) < 0)
@@ -384,7 +459,7 @@ int         main(int argc, char **argv, char **environ)
  * 
  *                   
  *                  
- *                              LINE 292
+ *                              fix compile errors
  * 
  * 
  * 
