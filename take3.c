@@ -292,15 +292,13 @@ int     forkin_time(char *path, char **arguments, char **envp)
     int         status;
     pid_t       pid;
 
-    printf("Forking!\n");
     status = 1;
-    printf("ERRNO MSG: %s\n", strerror(errno));
     pid = fork ();
     if (pid == 0)       /* This is the child process.  Execute the shell command. */
     {
-        printf("child PATH: '%s'\n", path);
-        if (execve(path, arguments, envp) < 0)
-            printf("ERRNO MSG: %s\n", strerror(errno));
+        execve(path, arguments, envp);
+        // if (execve(path, arguments, envp) < 0)
+        //     printf("ERRNO MSG: %s\n", strerror(errno));
         //execl (SHELL, SHELL, "-c", command, NULL);
         exit (EXIT_FAILURE);
     }
@@ -311,7 +309,6 @@ int     forkin_time(char *path, char **arguments, char **envp)
     }
     else                /* This is the parent process.  Wait for the child to complete.  */
     {
-        printf("waiting!\n");
         if (waitpid (pid, &status, 0) != pid)
         {
             status = -1;
@@ -443,12 +440,23 @@ char        *find_path(t_env *env)  //here need to find if the first argument is
 
 int     ft_echo(t_env *env, char **argv_ptr)
 {
-    int ret;
+    int     ret;
+    int     i;
 
+    i = 1;
+    (void)env;
     ret = 0;
-    (void)argv_ptr; //for testing
-    (void)env; //for testing
-    printf("ft_echo\n");
+    if (argv_ptr[i] != NULL)
+    {
+        while (argv_ptr[i] != NULL)
+        {
+            printf("%s", argv_ptr[i]);
+            if (argv_ptr[i + 1] != NULL)
+                printf(" ");
+            i++;
+        }
+        printf("\n");
+    }
     return (ret);
 }
 
@@ -463,14 +471,40 @@ int     ft_cd(t_env *env, char **argv_ptr)
     return (ret);
 }
 
+int     in_list(char *str, t_list *list)
+{
+    //make a string compare here
+    //if the string exists in any of the list->content strings before the '=' then return 1
+    // search through the program and look if i have already made something like this. (i think i have)
+
+
+    return (0);
+}
+
 int     ft_setenv(t_env *env, char **argv_ptr)
 {
-    int ret;
+    int     ret;
+    int     argc;
+    char    *temp;
 
+    argc = 0;
+    (void)env;
+    while (argv_ptr[argc] != NULL)
+        argc++;
     ret = 0;
-    (void)argv_ptr; //for testing
-    (void)env; //for testing
-    printf("ft_setenv\n");
+    if (argc >= 2 && argc <= 3 && !(in_list(argv_ptr[1], env->environ)))
+    {
+        temp = ft_strdup(argv_ptr[1]);
+        temp = ft_strnjoin( temp, "=",1);
+        if (argc == 3)
+            temp = ft_strnjoin(temp, argv_ptr[2], 1);
+        ft_lstappend(env->environ, temp, ft_strlen(temp));
+        free(temp);
+    }
+    else
+    {
+        printf("usage: setenv [variable name] [variable value]");
+    }
     return (ret);
 }
 
@@ -487,12 +521,17 @@ int     ft_unsetenv(t_env *env, char **argv_ptr)
 
 int     ft_env(t_env *env, char **argv_ptr)
 {
-    int ret;
+    int         ret;
+    t_list      *list;
 
     ret = 0;
-    (void)argv_ptr; //for testing
-    (void)env; //for testing
-    printf("ft_env\n");
+    (void)argv_ptr;
+    list = env->environ;
+    while (list != NULL)
+    {
+        printf("%s\n",list->content);
+        list = list->next;
+    }
     return (ret);
 }
 
@@ -500,10 +539,9 @@ int     ft_exit(t_env *env, char **argv_ptr)
 {
     int ret;
 
-    ret = 0;
-    (void)argv_ptr; //for testing
-    (void)env; //for testing
-    printf("ft_exit\n");
+    ret = -1;
+    (void)argv_ptr;
+    (void)env;
     return (ret);
 }
 
@@ -536,20 +574,14 @@ int         execute_command(t_env *env)
     ret = 0;
     argv_ptr = env->argument_ptr;
     if (argv_ptr[0] != NULL && is_builtin(argv_ptr[0]))
-    {
-        printf("Found a built in\n");
-        //ret = (g_func[is_builtin(argv_ptr[0])])(env, argv_ptr);
-    }
+        ret = (g_func[is_builtin(argv_ptr[0])])(env, argv_ptr);
     else if (argv_ptr[0] != NULL) //maybe change to list count more than 1
     {
         if ((access(argv_ptr[0], X_OK) == 0))
         {
-            printf("Lez fork it\n");
             forkin_time(argv_ptr[0], argv_ptr, env->environ_ptr);
         }
-        printf("Findin da path\n");
         path = find_path(env);
-        printf("PATH IS: %s\n", path);
         if ((access(path, X_OK) == 0))
             forkin_time(path, env->argument_ptr, env->environ_ptr);
         free(path);
@@ -565,20 +597,19 @@ int         event_loop(t_env *env)
     int     ret;
 
     ret = 0;
-    //while (put_test(env, "hello \"brave new\" world"))
     while (ret == 0 && read_line(env))
     {
         if (parse_command_line(env) < 0)
             printf("Error message\n");//make some error message
 
 
-                                                                                                                t_list  *fakeshit;
-                                                                                                                fakeshit = env->arguments;
-                                                                                                                while (fakeshit != NULL)
-                                                                                                                {
-                                                                                                                    printf("'%s'\n", fakeshit->content);
-                                                                                                                    fakeshit = fakeshit->next;
-                                                                                                                }
+                                                                                                                // t_list  *fakeshit;
+                                                                                                                // fakeshit = env->arguments;
+                                                                                                                // while (fakeshit != NULL)
+                                                                                                                // {
+                                                                                                                //     printf("'%s'\n", fakeshit->content);
+                                                                                                                //     fakeshit = fakeshit->next;
+                                                                                                                // }
     ret = execute_command(env);
     }
     return (0);
@@ -606,8 +637,9 @@ int         main(int argc, char **argv, char **environ)
  * 
  *                   
  *                  
- *                             track down seg fault in execute
- * 
+ *                             Line 474 - finish off the function
+ *                              int     in_list(char *str, t_list *list)
+
  * 
  * 
  * **********************/
