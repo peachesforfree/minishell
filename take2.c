@@ -22,19 +22,47 @@ typedef struct      s_env
     t_list      *environ;
     t_list      *command_list;
     char        **argv_ptr;
+    char        **path;
 }                   t_env;
 
 void        free_command_list(t_env *env);
 int         ft_env(t_env *env, char **argv_ptr);
 
 
+void        set_null_char(t_list *current, int count)
+{
+    char    *str;
+    int     i;
+
+    str = current->content;
+    i = 0;
+    while (i < count)
+    {
+        if (str[i] == '=')
+            return ;
+        if (!ft_isprint(str[i]))
+        {
+            str[i] = '\0';
+            return ;
+        }
+        i++;
+    }
+        str[i] = '\0';
+}
 
 void        input_var_value(t_list *list, char *var)
 {
-    char    *str_tmp;
+    t_list  *temp;
+    char    *str;
 
-    str_tmp = ft_strchr(var, '=') + 1;
-    list->next = ft_lstnew(str_tmp, ft_strlen(str_tmp));
+    str = ft_strchr(var, '=') + 1;
+    temp = ft_lstnew(str, ft_strlen(str) + 1);
+
+    set_null_char(temp, ft_strlen(str) + 1);
+    list->next = temp;
+    //   printf("%s %zu\n", var, ft_strlen(var));
+    //str_tmp = ft_strchr(var, '=') + 1;
+    //list->next = ft_lstnew(str_tmp, ft_strlen(str_tmp));
 }
 
 t_list      *deep_copy(char **environ)
@@ -43,6 +71,7 @@ t_list      *deep_copy(char **environ)
     t_list  *current;
     int     i;
     char    *str;
+    char    *special;
 
     i = 0;
     head = NULL;
@@ -51,17 +80,18 @@ t_list      *deep_copy(char **environ)
         if (head == NULL)
         {
             head = ft_lstnew(NULL, 0);
-            head->content = ft_lstnew(environ[i], (ft_strchr(environ[i], '=') - environ[i])); //name of variable
-            input_var_value(head->content, environ[i]);
+            head->content = ft_lstnew(environ[i], (int)(ft_strchr(environ[i], '=') - environ[i])); //(ft_strchr(environ[i], '=') - environ[i])); //name of variable
+            input_var_value(head->content, environ[i]); //environ[i]);
             current = head;
         }
         else
         {
             current->next = ft_lstnew(NULL, 0);
             current = current->next;
-            current->content = ft_lstnew(environ[i], (ft_strchr(environ[i], '=') - environ[i])); //name of variable
-            input_var_value(current->content, environ[i]);  
+            current->content = ft_lstnew(environ[i], (int)(ft_strchr(environ[i], '=') - environ[i])); //(ft_strchr(environ[i], '=') - environ[i])); //name of variable
+            input_var_value(current->content, environ[i]);//environ[i]);  
         }
+        set_null_char(current->content, (int)(ft_strchr(environ[i], '=') - environ[i]));
         i++;
     }
     return (head);
@@ -391,8 +421,27 @@ int     ft_echo(t_env *env, char **argv_ptr)
 int     ft_cd(t_env *env, char **argv_ptr)
 {
     int i;
+    int arg_cnt;
 
-    i = 1;
+    arg_cnt = 0;
+    i = 0;
+    // while (argv_ptr != NULL)
+    //     arg_cnt++;
+    
+    // if (argv_ptr > 1)
+    // {
+    //     //you got some problems
+    // }
+    // if (arg_cnt == 0)
+    // {
+    //     //move current directory to OLDPWD
+    //     //set PWD to home dir
+    // }
+    // else
+    // {
+    //     //move pwd to OLDPWD and set destination to current
+    //     //go to destination 
+    // }
     return (i);
 }
 
@@ -420,7 +469,7 @@ void        add_var(char *str, t_list *environ)
     temp = environ;
     while (temp->next != NULL)
         temp = temp->next;
-    temp->next = ft_lstnew(NULL, 0);
+    temp->next = NULL;
     temp->content = ft_lstnew(str, ft_strlen(str));
 }
 
@@ -432,7 +481,7 @@ void    add_value(char *var, char *value, t_list *environ)
     if (temp == NULL)
         return ;
     temp = temp->content;
-    temp->next = ft_lstnew(value, ft_strlen(value));      
+    temp->next = ft_lstnew(value, ft_strlen(value));
 }
 
 void        free_value(t_list *list)
@@ -485,12 +534,80 @@ int     ft_setenv(t_env *env, char **argv_ptr)
     return (i);
 }
 
+void    free_list(t_list *list)
+{
+    t_list *last;
+
+    while (list != NULL)
+    {
+        last = list;
+        list = list->next;
+
+        free(last->content);
+        free(last);
+    }
+}
+
+void    free_node(t_env *env, t_list *list)
+{
+    t_list  *last;
+    t_list  *environ;
+
+    environ = env->environ;
+    if (environ == list)
+    {
+        printf("First list\n");        
+        env->environ = list->next;
+        free_list(list->content);
+        free(list);
+        return ;
+    }
+    while (environ != NULL)
+    {
+
+        last = environ;
+        environ = environ->next;
+        printf("%p environ\t%p list\n", environ, list);
+        if (environ == list)
+        {
+            if (environ->next != NULL)
+            {
+                printf("mid list \n");                
+                last->next = environ->next;
+                free_list(environ->content);
+                free(environ);
+                return ;
+            }
+            else if (environ->next == NULL)
+            {
+                printf("last in list\n");
+                last->next = NULL;
+                free_list(environ->content);
+                free(environ);
+                return ;
+            }
+        }
+    }
+
+}
 
 int     ft_unsetenv(t_env *env, char **argv_ptr)
 {
     int i;
+    t_list  *list;
+    t_list  *temp;
 
     i = 1;
+    list = env->environ;
+    while (list != NULL)
+    {
+        temp = list->content;
+        if (ft_strstr(temp->content, argv_ptr[1]) && ft_strlen(temp->content) == ft_strlen(argv_ptr[1]))
+        {
+            free_node(env, list);
+        }
+        list = list->next;
+    }
     return (i);
 }
 
@@ -554,10 +671,30 @@ int         is_builtin(char *str)
     return (0);
 }
 
+int         is_path(t_env *env)
+{
+    int     i;
+    t_list  *list;
+    t_list  *sub_list;
+
+    list = env->environ;
+    i = 0;
+    while (list != NULL && list->content && env->path == NULL)
+    {
+        sub_list = list->content;
+        if (sub_list->content != NULL && ft_strstr(sub_list->content, "PATH")
+            env->path = ft_strsplit(sub_list->next->content, ':');
+        list = list->next;
+    }
+    search_each_dir(env);
+    return (1);
+}
+
 int         execute_command(t_env *env, char **argv_ptr)
 {
     int     ret;
 
+    //should it be argv_ptr 1 ?
     ret = 0;
     if (argv_ptr[0] != NULL && is_builtin(argv_ptr[0]))
     {
@@ -565,11 +702,17 @@ int         execute_command(t_env *env, char **argv_ptr)
     }
     else if (argv_ptr[0] != NULL)
     {
-    //find is command is in path
+        if (is_path(env, argv_ptr[0]))
+        {
     //fork command
     //wait on fork
-    //each will return 1 upon use. 
-    //if nothing is found, an error message needs to be printed in previous 'shell_loop' function
+    //each will return 1 upon use.
+        }
+        else
+        {
+            printf("Error message\n");
+            ret = -1;
+        }
     }
     return (ret);
 }
@@ -625,6 +768,7 @@ int main(int argc, char **argv, char **environ)
     env.buffer_size = STDIN_BUFFER;
     env.flag = 0;
     env.argv_ptr = NULL;
+    env.path = NULL;
 
     
     ret = shell_loop(&env);
@@ -638,8 +782,8 @@ int main(int argc, char **argv, char **environ)
  * 
  *                  start on line 446
  *                      
- *                      need to finish the built in commands
- *                                          
+ *                      before ginishing the built in commands
+ *                     need to finish the PATH execution                     
  *                  
  *                                                                              
  *                          
