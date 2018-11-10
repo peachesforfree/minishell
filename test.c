@@ -1,55 +1,11 @@
-
-
-
-
 #include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
+#include <errno.h>
 #include <unistd.h>
-//#include "libft/libft.h"
+#include <string.h>
 
-int     ft_strlen(char *str)
+int     main(int argc, char **argv, char **environ)
 {
-    int     i;
-
-    i = 0;
-    while (str[i] != '\0')
-        i++;
-    return (i);
-}
-
-/*
-    char **temp[1];
-        \/
-       0 [][][][][][][][]
-       1 [][][][][][][][]
-       2 [][][][][][][][]
-       3 [N][U][L][L][L][][][]
-
-*/
-
-char    **make_str_ptr(int  count)
-{
-    char    **temp;
-
-    temp = (char**)malloc(sizeof(char**) * count + 1);
-    temp[count] = NULL;
-    return (temp);
-}
-
-int main(int argc, char **argv)
-{
-   char     **oranges;
-
-   oranges = make_str_ptr(argc);
-
+    if (execve("/bin/ls", argv, environ) < 0)
+        printf("ERRNO MSG: %s\n", strerror(errno));
     return (0);
 }
-
-/*
-
-
-
-
-
-*/

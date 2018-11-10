@@ -7,7 +7,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <dirent.h>
-
+#include <errno.h>
+#include <string.h>
 #include <sys/wait.h>
 
 
@@ -217,6 +218,37 @@ void    string_split_list(t_list **head, char *buffer)
     }
 }
 
+int     ft_lstcount(t_list *list)
+{
+    int i;
+
+    i = 0;
+    while (list != NULL)
+    {
+        i++;
+        list = list->next;
+    }
+    return (i);
+}
+
+char     **char_ptr_from_list(t_list  *list)
+{
+    char    **current_ptr;
+    int     i;
+
+    current_ptr = (char **)ft_memalloc(sizeof(char*) * (ft_lstcount(list) + 1));
+    i = 0;
+    while (list != NULL)
+    {
+        current_ptr[i] = list->content;
+        i++;
+        list = list->next;
+    }
+    current_ptr[i] = NULL;
+    return (current_ptr);
+}
+
+
 int        parse_command_line(t_env *env)
 {
     int     count;
@@ -232,6 +264,18 @@ int        parse_command_line(t_env *env)
     string_split_list(&tokens, env->buffer);
 //    tokens = env_expansion(tokens);
     env->arguments = tokens;
+    if (env->argument_ptr != NULL)
+    {
+        free(env->argument_ptr);
+        env->argument_ptr = NULL;
+    }
+    env->argument_ptr = char_ptr_from_list(env->arguments);
+    if (env->environ_ptr != NULL)
+    {
+        free(env->environ_ptr);
+        env->environ_ptr = NULL;
+    }
+    env->environ_ptr = char_ptr_from_list(env->environ);
     return (0);
 } 
 
@@ -241,27 +285,40 @@ int     put_test(t_env *env, char *str)
     return (1);
 }
 
-// int     forkin_time(char *path, char **arguments, char **envp)
-// {
-//     //need to create absolute path of executable
-//     //need to generate a char** pointer to the argv
-//     int         status;
-//     pid_t       pid;
+int     forkin_time(char *path, char **arguments, char **envp)
+{
+    //need to create absolute path of executable
+    //need to generate a char** pointer to the argv
+    int         status;
+    pid_t       pid;
 
-//     pid = fork ();
-//     if (pid == 0)       /* This is the child process.  Execute the shell command. */
-//     {
-//         execve();
-//         //execl (SHELL, SHELL, "-c", command, NULL);
-//         exit (EXIT_FAILURE);
-//     }
-//     else if (pid < 0)   /* The fork failed.  Report failure.  */
-//         status = -1;
-//     else                /* This is the parent process.  Wait for the child to complete.  */
-//         if (waitpid (pid, &status, 0) != pid)
-//             status = -1;
-//     return (status);
-// }
+    printf("Forking!\n");
+    status = 1;
+    printf("ERRNO MSG: %s\n", strerror(errno));
+    pid = fork ();
+    if (pid == 0)       /* This is the child process.  Execute the shell command. */
+    {
+        printf("child PATH: '%s'\n", path);
+        if (execve(path, arguments, envp) < 0)
+            printf("ERRNO MSG: %s\n", strerror(errno));
+        //execl (SHELL, SHELL, "-c", command, NULL);
+        exit (EXIT_FAILURE);
+    }
+    else if (pid < 0)   /* The fork failed.  Report failure.  */
+    {
+        status = -1;
+        printf("Error\n");
+    }
+    else                /* This is the parent process.  Wait for the child to complete.  */
+    {
+        printf("waiting!\n");
+        if (waitpid (pid, &status, 0) != pid)
+        {
+            status = -1;
+        }
+    }
+    return (status);
+}
 
 char        **tlst_to_char_arry(t_list *list)
 {
@@ -372,7 +429,7 @@ char        *find_path(t_env *env)  //here need to find if the first argument is
         if (check_directory(directory, env->arguments))
         {
             temp = env->arguments;
-            abs_path = ft_strjoin(path_list[i], "\"");
+            abs_path = ft_strjoin(path_list[i], "/");
             abs_path = ft_strnjoin(abs_path, temp->content, 1);
             //produce complete path with executable at end
             //free path_list at end
@@ -384,31 +441,121 @@ char        *find_path(t_env *env)  //here need to find if the first argument is
     return (NULL);
 }
 
+int     ft_echo(t_env *env, char **argv_ptr)
+{
+    int ret;
+
+    ret = 0;
+    (void)argv_ptr; //for testing
+    (void)env; //for testing
+    printf("ft_echo\n");
+    return (ret);
+}
+
+int     ft_cd(t_env *env, char **argv_ptr)
+{
+    int ret;
+
+    ret = 0;
+    (void)argv_ptr; //for testing
+    (void)env; //for testing
+    printf("ft_cd\n");
+    return (ret);
+}
+
+int     ft_setenv(t_env *env, char **argv_ptr)
+{
+    int ret;
+
+    ret = 0;
+    (void)argv_ptr; //for testing
+    (void)env; //for testing
+    printf("ft_setenv\n");
+    return (ret);
+}
+
+int     ft_unsetenv(t_env *env, char **argv_ptr)
+{
+    int ret;
+
+    ret = 0;
+    (void)argv_ptr; //for testing
+    (void)env; //for testing
+    printf("ft_unsetenv\n");
+    return (ret);
+}
+
+int     ft_env(t_env *env, char **argv_ptr)
+{
+    int ret;
+
+    ret = 0;
+    (void)argv_ptr; //for testing
+    (void)env; //for testing
+    printf("ft_env\n");
+    return (ret);
+}
+
+int     ft_exit(t_env *env, char **argv_ptr)
+{
+    int ret;
+
+    ret = 0;
+    (void)argv_ptr; //for testing
+    (void)env; //for testing
+    printf("ft_exit\n");
+    return (ret);
+}
+
+char *g_builtin[] = { NULL, "echo", "cd", "setenv", "unsetenv", "env", "exit", NULL};
+
+int		(*g_func[]) (t_env *env, char **user_input) = { NULL, ft_echo, ft_cd, ft_setenv, ft_unsetenv, ft_env, ft_exit};
+
+int         is_builtin(char *str)
+{
+    int     i;
+
+    i = 1;
+    while (g_builtin[i] != NULL)
+    {
+        //printf("Compare: %s\t%s\n", str, g_builtin[i]);
+        if (ft_strstr(str, g_builtin[i]) != NULL && (ft_strlen(str) == ft_strlen(g_builtin[i])))
+            return (i);
+        i++;
+    }
+    return (0);
+}
+
 int         execute_command(t_env *env)
 {
     int     ret;
     char    *path;
+    char    **argv_ptr;
     //t_list  *temp;
 
     ret = 0;
-    // if (argv_ptr[0] != NULL && is_builtin(argv_ptr[0]))
-    // {
-    //     ret = (g_func[is_builtin(argv_ptr[0])])(env, argv_ptr);
-    // }
-    // else if ((access(argv_ptr[0], X_OK) == 0))
-    //       forkin_time(EXEC PATH, ARGV PTR, ENV);
-    // else if (argv_ptr[0] != NULL) //maybe change to list count more than 1
-    // {
+    argv_ptr = env->argument_ptr;
+    if (argv_ptr[0] != NULL && is_builtin(argv_ptr[0]))
+    {
+        printf("Found a built in\n");
+        //ret = (g_func[is_builtin(argv_ptr[0])])(env, argv_ptr);
+    }
+    else if (argv_ptr[0] != NULL) //maybe change to list count more than 1
+    {
+        if ((access(argv_ptr[0], X_OK) == 0))
+        {
+            printf("Lez fork it\n");
+            forkin_time(argv_ptr[0], argv_ptr, env->environ_ptr);
+        }
+        printf("Findin da path\n");
         path = find_path(env);
-        //env->argument_ptr = tlst_to_char_arry(env->arguments);
-        //forkin_time(path, env->argument_ptr, env->environ);
-        //free(env->arguments_ptr);
-        //env->arguments_ptr = NULL;
-        //free(path);
-
-    // }
-    // else
-    //  printf("Error path not found\n");
+        printf("PATH IS: %s\n", path);
+        if ((access(path, X_OK) == 0))
+            forkin_time(path, env->argument_ptr, env->environ_ptr);
+        free(path);
+    }
+    else
+        printf("Error path not found\n");
     //free path, arguments, envp
     return (ret);
 }
@@ -459,7 +606,7 @@ int         main(int argc, char **argv, char **environ)
  * 
  *                   
  *                  
- *                              fix compile errors
+ *                             track down seg fault in execute
  * 
  * 
  * 
