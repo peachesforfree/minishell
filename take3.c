@@ -194,13 +194,13 @@ void    string_split_list(t_list **head, char *buffer)
         off = 0;
         if (!ft_isspace(&buffer[i]) && buffer[i] != '"')
         {
-            while (!ft_isspace(&buffer[i + off]) && buffer[i + off] != '"')
+            while (buffer[i + off] != '\0' && !ft_isspace(&buffer[i + off]) && buffer[i + off] != '"')
                 off++;
             *head = ft_lstappend(*head, &buffer[i], off);
             i += off;    
             continue;
         }
-        else if (buffer[i] == '"')
+        else if (buffer[i] == '"')                                                                      
         {
         //    *head = ft_lstappend(*head, &buffer[i], off);
         //    off++;
@@ -392,7 +392,7 @@ char        **assemble_env_list(char *str, char d, t_list *list)
             if (char_count(temp, d) == 0)
                 return (NULL);
             word_count = char_count(temp, d);
-            result = (char**)ft_memalloc(sizeof(char*) * word_count + 1);
+            result = (char**)ft_memalloc(sizeof(char*) * (word_count + 1));
             while(temp[0] != '\0' && i < word_count)
             {
                 temp_len = ft_strchr(temp, d) - temp;
@@ -407,7 +407,6 @@ char        **assemble_env_list(char *str, char d, t_list *list)
     }
     return (result);
 }
-
 
 char        *find_path(t_env *env)  //here need to find if the first argument is an alias for what is in the paths
 {
@@ -434,7 +433,7 @@ char        *find_path(t_env *env)  //here need to find if the first argument is
         }
         closedir(directory);
         i++;
-    }
+    }                                                               
     return (NULL);
 }
 
@@ -634,7 +633,6 @@ int         event_loop(t_env *env)
     {
         if (parse_command_line(env) < 0)
             printf("Error message\n");//make some error message
-
 
                                                                                                                 // t_list  *fakeshit;
                                                                                                                 // fakeshit = env->arguments;
