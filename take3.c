@@ -248,6 +248,28 @@ char     **char_ptr_from_list(t_list  *list)
     return (current_ptr);
 }
 
+t_list      *env_expansion(t_env *env, t_list *list)                                                            ///////////////////////
+{
+    t_list  *current;
+    char    *string;
+    char    *var;
+
+    current = list;
+    while (current != NULL)
+    {
+        string = current->content;
+        var = ft_strchr(string, '$');
+        if (var != NULL)
+        {
+            //given var ptr, find in env->environ list, that function needs to return the malloced contents of the value
+            //put null char at $ in string
+            //string = ft_strnjoin(string, 'new string', 3)
+        }
+        current = current->next;
+    }
+    return(list);
+}
+
 
 int        parse_command_line(t_env *env)
 {
@@ -262,7 +284,7 @@ int        parse_command_line(t_env *env)
         return(-1);
     }
     string_split_list(&tokens, env->buffer);
-//    tokens = env_expansion(tokens);
+    tokens = env_expansion(env, tokens);
     env->arguments = tokens;
     if (env->argument_ptr != NULL)
     {
@@ -668,7 +690,7 @@ int         main(int argc, char **argv, char **environ)
  * 
  *                   
  *                  
- *                             Line 634
+ *                             line 251
  *                              
  * 
  * 
