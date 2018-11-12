@@ -495,8 +495,6 @@ int     ft_strccmp(char *s1, char *s2, char c)
 
 t_list     *in_list(char *str, t_list *list)
 {
-    char    *env_name;
-
     while (list != NULL)
     {
         if (ft_strccmp(str, list->content, '='))
@@ -520,7 +518,7 @@ int     ft_setenv(t_env *env, char **argv_ptr)
         argc++;
     ret = 0;
     list = in_list(argv_ptr[1], env->environ);
-    if (argc >= 2 && argc <= 3 && list == NULL
+    if ((argc == 3 || argc == 2) && list == NULL)
     {
         temp = ft_strdup(argv_ptr[1]);
         temp = ft_strnjoin( temp, "=",1);
@@ -531,9 +529,10 @@ int     ft_setenv(t_env *env, char **argv_ptr)
     }
     else if (list != NULL)
     {
-        //make use of the list element and modify values within it
-        //if no more arguments ... remove all after '=' char
-        //if THERE ARE ARGUMENTS ... change the stuff after '=' to what is in arguments
+        temp = ft_strchr(list->content, '=') + 1;
+        temp[0] = '\0';
+        if (argc == 3) //change whats in there
+            list->content = ft_strnjoin(list->content, argv_ptr[2], 1);
     }
     else
     {
@@ -673,7 +672,6 @@ int         main(int argc, char **argv, char **environ)
  *                  
  *                             Line 634
  *                              
-
  * 
  * 
  * **********************/
