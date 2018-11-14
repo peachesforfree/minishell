@@ -248,7 +248,23 @@ char     **char_ptr_from_list(t_list  *list)
     return (current_ptr);
 }
 
-t_list      *env_expansion(t_env *env, t_list *list)                                                            ///////////////////////
+char        *list_check(char *str, t_list *list)
+{
+    char    *ret;
+
+    ret = NULL;
+    while (list != NULL)
+    {
+        if (ft_strcmp(str, list->content))
+        {
+            return (ft_strchr(list->content, '=') + 1);
+        }
+        list = list->next;
+    }
+    return (ret);
+}
+
+t_list      *env_expansion(t_env *env, t_list *list)                   //List is user input tokens 
 {
     t_list  *current;
     char    *string;
@@ -261,9 +277,11 @@ t_list      *env_expansion(t_env *env, t_list *list)                            
         var = ft_strchr(string, '$');
         if (var != NULL)
         {
-            //given var ptr, find in env->environ list, that function needs to return the malloced contents of the value
-            //put null char at $ in string
-            //string = ft_strnjoin(string, 'new string', 3)
+            if (list_check(&var[1], env->environ))
+            {
+                var[0] = '\0';
+                current->content = ft_strnjoin( current->content, list_check(&var[1], env->environ), 1);
+            }
         }
         current = current->next;
     }
@@ -562,14 +580,66 @@ int     ft_setenv(t_env *env, char **argv_ptr)
     return (ret);
 }
 
+void    ft_freelst(t_list *list)
+{
+    if (!list)
+        return;
+    if (list->content)
+    {
+        ft_bzero(list->content, list->content_size);
+        free(list->content);
+    }
+    ft_bzero(list, sizeof(list));
+    free(list);
+}
+
+t_list  *ft_nodebefore(t_list *current, t_list *head)
+{
+    while (head != NULL && head->next != current)
+        head = head->next;
+    return (head);
+}
+
+void    remove_from_list(t_list *node, t_list **head)
+{
+    t_list  *temp;
+
+    temp = *head;
+    if (temp == node)
+        *head = temp->next;
+    else
+    {
+        temp = ft_nodebefore(node, temp);
+        if (temp != NULL)
+            temp->next = node->next;
+    }
+    ft_freelst(node);
+}
+
 int     ft_unsetenv(t_env *env, char **argv_ptr)
 {
     int ret;
+    int count;
+    t_list  *list;
+    int     i;
 
+    count = 0;
     ret = 0;
-    (void)argv_ptr; //for testing
-    (void)env; //for testing
-    printf("ft_unsetenv\n");
+    i = 1;
+    (void)argv_ptr;
+    while (argv_ptr[count] != NULL)
+        count++;
+    if (count >= 2)
+    {
+        while (i < count)
+        {
+            list = in_list(argv_ptr[i], env->environ);
+            remove_from_list(list, &env->environ);
+            i++;
+        }
+    }
+    else
+        printf("unsetenv: Too few arguments.");
     return (ret);
 }
 
@@ -688,9 +758,9 @@ int         main(int argc, char **argv, char **environ)
 /****************
  *                      gcc take3.c -g includes/mini_shell.h libft/libft.a
  * 
- *                   
+ *                   start working on unsetenv
  *                  
- *                             line 251
+ *                             
  *                              
  * 
  * 

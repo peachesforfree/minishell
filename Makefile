@@ -26,11 +26,11 @@ $(NAME):
 
 
 
-fclean:
+fclean: clean
 	$(RM) $(NAME)
 	make -C libft fclean
 
-clean: fclean
+clean:
 	make -C libft clean
 
-re: fclean all%
+re: fclean all
