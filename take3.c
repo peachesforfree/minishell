@@ -499,14 +499,38 @@ int     ft_echo(t_env *env, char **argv_ptr)
     return (ret);
 }
 
+void    pwd_swap(t_env *env)            ///////////////////// write a function that will put PWD into PWD       ...     and maybe include putting argv_ptr into PWD
+{
+    list = in_list("PWD", env->environ);
+}
+
 int     ft_cd(t_env *env, char **argv_ptr)
 {
-    int ret;
+    int     ret;
+    int     i;
+    char    *temp;
+    t_list  *list;
 
     ret = 0;
-    (void)argv_ptr; //for testing
-    (void)env; //for testing
-    printf("ft_cd\n");
+    i = 0;
+    temp = NULL;
+    list = NULL;
+    while (argv_ptr[i] != NULL)
+        i++;
+    if (i == 2)
+    {
+        //make if condition for '~' use environtment variable expansion for HOMEDIR
+        chdir(argv_ptr[1]);
+        temp = getcwd(NULL, 0);
+        pwd_swap(env);
+        //put temp in PWD environ
+    }
+    if (i == 1)
+    {
+        //return to old pwd
+    }
+    if (i > 2)
+        printf("cd: Too many arguments\n");    
     return (ret);
 }
 
@@ -758,10 +782,6 @@ int         main(int argc, char **argv, char **environ)
 /****************
  *                      gcc take3.c -g includes/mini_shell.h libft/libft.a
  * 
- *                   start working on unsetenv
- *                  
- *                             
- *                              
  * 
  * 
  * **********************/
