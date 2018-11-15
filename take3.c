@@ -781,7 +781,7 @@ int         main(int argc, char **argv, char **environ)
 
 /****************
  *                      gcc take3.c -g includes/mini_shell.h libft/libft.a
- * 
+ *              staret line 502
  * 
  * 
  * **********************/
