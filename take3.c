@@ -24,6 +24,9 @@
 
 #define QUOTE_WRONG     1
 
+int     ft_strccmp(char *s1, char *s2, char c);
+t_list     *in_list(char *str, t_list *list);
+
 
 typedef struct      s_env
 {
@@ -499,9 +502,42 @@ int     ft_echo(t_env *env, char **argv_ptr)
     return (ret);
 }
 
-void    pwd_swap(t_env *env)            ///////////////////// write a function that will put PWD into PWD       ...     and maybe include putting argv_ptr into PWD
+t_list    *pwd_swap(t_env *env)
 {
-    list = in_list("PWD", env->environ);
+    t_list      *pwd;
+    t_list      *old_pwd;
+    char        *temp;
+
+    pwd = in_list("PWD", env->environ);
+    old_pwd = in_list("OLDPWD", env->environ);
+    temp = ft_strchr(old_pwd->content, '=');
+    temp[1] = '\0';
+    old_pwd->content = ft_strnjoin(old_pwd->content, (ft_strchr(pwd->content, '=') + 1), 1);
+    temp = ft_strchr(pwd->content,'=');
+    temp[1] = '\0';
+    pwd->content_size = ft_strlen(pwd->content);
+    return (pwd);
+}
+
+int     directory_check(char **argv_ptr)
+{
+    char    *temp;
+    int     i;
+
+    i = 1;
+    temp = ft_strnjoin(getcwd(NULL, 0), "/", 1);
+    temp = ft_strnjoin(temp, argv_ptr[1], 1); 
+    printf("\t\t\t\t\t\t\t\t\t\t\t\t\tPATH: '%s'\n", temp);
+    if (access(temp, R_OK | X_OK) != 0)
+    {
+        printf("\t\t\t\t\t\t\t\t\t\t\t\t\tPath is bad\n");
+        i = 0;
+    }
+    ft_bzero(temp, ft_strlen(temp));
+    free(temp);
+    if (i == 0)
+        printf("cd: no such file of directory: %s", argv_ptr[1]);
+    return(i);    
 }
 
 int     ft_cd(t_env *env, char **argv_ptr)
@@ -517,19 +553,21 @@ int     ft_cd(t_env *env, char **argv_ptr)
     list = NULL;
     while (argv_ptr[i] != NULL)
         i++;
-    if (i == 2)
+    if (i == 2 && directory_check(argv_ptr))
     {
         //make if condition for '~' use environtment variable expansion for HOMEDIR
         chdir(argv_ptr[1]);
         temp = getcwd(NULL, 0);
-        pwd_swap(env);
-        //put temp in PWD environ
+        list = pwd_swap(env);
+        list->content = ft_strnjoin(list->content, "/", 1);
+        list->content = ft_strnjoin( list->content, temp, 3);
+        printf("\t\t\t\t\t\t\t\t\t\t\t\t%s\n", list->content);
     }
-    if (i == 1)
+    else if (i == 1)
     {
         //return to old pwd
     }
-    if (i > 2)
+    else if (i > 2)
         printf("cd: Too many arguments\n");    
     return (ret);
 }
@@ -781,7 +819,7 @@ int         main(int argc, char **argv, char **environ)
 
 /****************
  *                      gcc take3.c -g includes/mini_shell.h libft/libft.a
- *              staret line 502
+ *              fix the ENV espansion
  * 
  * 
  * **********************/
