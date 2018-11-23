@@ -1,4 +1,4 @@
-#include <../includes/mini_shell.h>
+#include "../includes/mini_shell.h"
 
 int     forkin_time(char *path, char **arguments, char **envp)
 {
@@ -31,6 +31,8 @@ int     forkin_time(char *path, char **arguments, char **envp)
     }
     return (status);
 }
+
+int		(*g_func[]) (t_env *env, char **user_input) = { NULL, ft_echo, ft_cd, ft_setenv, ft_unsetenv, ft_env, ft_exit};
 
 int         execute_command(t_env *env)
 {

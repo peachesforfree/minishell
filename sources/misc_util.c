@@ -1,4 +1,4 @@
-#include <../includes/mini_shell.h>
+#include "../includes/mini_shell.h"
 
 void        free_2d_arr(char **arr)
 {

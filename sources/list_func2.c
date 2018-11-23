@@ -1,4 +1,4 @@
-#include <../includes/mini_shell.h>
+#include "../includes/mini_shell.h"
 
 void    string_split_list(t_list **head, char *buffer)
 {

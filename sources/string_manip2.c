@@ -1,5 +1,4 @@
-#include <../includes/mini_shell.h>
-
+#include "../includes/mini_shell.h"
 int         char_count(char *str, char c)
 {
     int     i;

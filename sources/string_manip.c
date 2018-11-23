@@ -1,4 +1,4 @@
-#include <../includes/mini_shell.h>
+#include "../includes/mini_shell.h"
 
 char        **tlst_to_char_arry(t_list *list)
 {

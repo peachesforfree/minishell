@@ -1,4 +1,4 @@
-#include <../includes/mini_shell.h>
+#include "../includes/mini_shell.h"
 
 void    ft_freelst(t_list *list)
 {

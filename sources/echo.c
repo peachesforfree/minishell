@@ -1,5 +1,4 @@
-#include <../includes/mini_shell.h>
-
+#include "../includes/mini_shell.h"
 int     ft_echo(t_env *env, char **argv_ptr)
 {
     int     ret;

@@ -1,4 +1,4 @@
-#include <../includes/mini_shell.h>
+#include "../includes/mini_shell.h"
 
 int     ft_env(t_env *env, char **argv_ptr)
 {
@@ -27,8 +27,6 @@ int     ft_exit(t_env *env, char **argv_ptr)
 }
 
 char *g_builtin[] = { NULL, "echo", "cd", "setenv", "unsetenv", "env", "exit", NULL};
-
-int		(*g_func[]) (t_env *env, char **user_input) = { NULL, ft_echo, ft_cd, ft_setenv, ft_unsetenv, ft_env, ft_exit};
 
 int         is_builtin(char *str)
 {

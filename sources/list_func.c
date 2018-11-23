@@ -1,4 +1,4 @@
-#include <../includes/mini_shell.h>
+#include "../includes/mini_shell.h"
 
 t_list      *ft_lstappend(t_list *head, char *str, int i)
 {

@@ -1,5 +1,4 @@
-#include <../includes/mini_shell.h>
-/*
+#include "../includes/mini_shell.h"/*
 ** int  ft_strccmp(char *s1, char *s2, char c)
 **will compare each char in the string until either differes
 **only when the s2 is qual to special char AND s1 is '\0' meaning both strings compare upto the special char

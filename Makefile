@@ -6,23 +6,23 @@ FLAGS = -Wall -Werror -Wextra
 
 BUGGER = -fsanitize=address
 
-FILES = main.c \
-		unsetenv.c \
-		string_manip2.c \
-		string_manip.c \
-		start_func.c \
-		setenv.c \
-		misc_util.c \
-		misc_builtin.c \
-		list_func2.c \
-		list_func.c \
-		fork_exec.c \
-		env_expansion.c \
-		end_func.c \
-		echo.c \
-		dir_read.c \
-		command_parse.c \
-		cd.c
+FILES = sources/main.c \
+		sources/unsetenv.c \
+		sources/string_manip2.c \
+		sources/string_manip.c \
+		sources/start_func.c \
+		sources/setenv.c \
+		sources/misc_util.c \
+		sources/misc_builtin.c \
+		sources/list_func2.c \
+		sources/list_func.c \
+		sources/fork_exec.c \
+		sources/env_expansion.c \
+		sources/end_func.c \
+		sources/echo.c \
+		sources/dir_read.c \
+		sources/command_parse.c \
+		sources/cd.c
 
 LIBS = libft/libft.a
 
