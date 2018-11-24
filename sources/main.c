@@ -33,7 +33,7 @@ int         main(int argc, char **argv, char **environ)
 
 /****************
  *                      gcc take3.c -g includes/mini_shell.h libft/libft.a
- *              fix the ENV espansion (only chooses the first item in the list)
- *              free everything 
+ *              fix the ENV espansion (only chooses the first item in the list)     Read notes command+parse.c Line 51
+ *              free everything
  *              Make file ... check other make files how to pre or post pend ... need to prepend the sources directory
  * **********************/

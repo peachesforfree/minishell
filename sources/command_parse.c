@@ -47,11 +47,24 @@ t_list      *env_expansion(t_env *env, t_list *list)                   //List is
                 current->content = ft_strnjoin( current->content, list_check(&var[1], env->environ), 1);
             }
         }
+/*
+        else if ( If only argument is "~" )
+        {
+            //print out old PWD
+        }
+        else if ( if the only argument is "-" )
+        {
+            //takes you to OLDPWD and prints it out
+        }
+        else if ( checking if CD is alone)
+        {
+            //put home dir into this 
+        }
+*/
         current = current->next;
     }
     return(list);
 }
-
 
 int        parse_command_line(t_env *env)
 {

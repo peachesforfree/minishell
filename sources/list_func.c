@@ -25,18 +25,17 @@ t_list      *ft_lstappend(t_list *head, char *str, int i)
 
 char        *list_check(char *str, t_list *list)
 {
-    char    *ret;
 
-    ret = NULL;
     while (list != NULL)
     {
-        if (ft_strcmp(str, list->content))
+        //test = ft_strcmp(str, list->content);
+        if (ft_strccmp(str, list->content, '='))
         {
             return (ft_strchr(list->content, '=') + 1);
         }
         list = list->next;
     }
-    return (ret);
+    return (NULL);
 }
 
 int        check_directory(DIR *directory, t_list *list)
