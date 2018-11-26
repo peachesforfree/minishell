@@ -47,7 +47,7 @@ t_list      *env_expansion(t_env *env, t_list *list)                   //List is
                 current->content = ft_strnjoin( current->content, list_check(&var[1], env->environ), 1);
             }
         }
-/*
+/*      On second thought ... move this to the fd_cd function listing
         else if ( If only argument is "~" )
         {
             //print out old PWD

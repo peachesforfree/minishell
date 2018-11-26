@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   setenv.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sbalcort <sbalcort@student.42.us.org>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/11/26 13:53:58 by sbalcort          #+#    #+#             */
+/*   Updated: 2018/11/26 13:54:02 by sbalcort         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/mini_shell.h"/*
 ** int  ft_strccmp(char *s1, char *s2, char c)
 **will compare each char in the string until either differes
