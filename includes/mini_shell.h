@@ -54,7 +54,6 @@ int         char_count(char *str, char c);
 char        *find_path(t_env *env);
 char        **assemble_env_list(char *str, char d, t_list *list);
 char        **tlst_to_char_arry(t_list *list);
-void        free_command_list(t_env *env);
 void        env_init(t_env *env, char **environ);
 t_list        *copy_environ(char **environ);
 int     ft_setenv(t_env *env, char **argv_ptr);
@@ -83,6 +82,7 @@ int     directory_check(char **argv_ptr);
 t_list    *pwd_swap(t_env *env);
 void		deconstruct(t_env *env);
 void		free_2d_char(char **str);
+void		free_list(t_list *temp);
 
 
 #endif

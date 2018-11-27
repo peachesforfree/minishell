@@ -3,23 +3,31 @@
 int         read_line(t_env *env)
 {
 	char    *line;
- 
+	char	*temp;
+
 	line = env->buffer;
 	ft_bzero(env->buffer, env->buffer_size);
 	env->buffer_count = 0;
 	ft_putstr(COMMAND_PROMPT);
-	free_command_list(env);
+	if (env->arguments != NULL)
+	{
+		free_list(env->arguments);
+		env->arguments = NULL;
+	}
 	while (1)
 	{
-		read(STDIN, &line[env->buffer_count], 1);        
+		read(STDIN, &line[env->buffer_count], 1);
 		if (line[env->buffer_count] == '\n')
 		{
 			line[env->buffer_count] = '\0';
 			return (1);
 		}
-		if (env->buffer_count == env->buffer_size)
+		if (env->buffer_count >= env->buffer_size)
 		{
-			env->buffer = ft_realloc(env->buffer, env->buffer_size);
+			temp = env->buffer;
+			env->buffer = ft_realloc(env->buffer, env->buffer_size + STDIN_BUFFER);
+			ft_bzero(temp, env->buffer_size - STDIN_BUFFER);
+			free(temp);
 			env->buffer_size += STDIN_BUFFER;
 			line = env->buffer;
 		}
@@ -80,6 +88,8 @@ int        parse_command_line(t_env *env)
 	}
 	string_split_list(&tokens, env->buffer);
 	tokens = env_expansion(env, tokens);
+	if (env->arguments != NULL)
+		free_list(env->arguments);
 	env->arguments = tokens;
 	if (env->argument_ptr != NULL)
 	{

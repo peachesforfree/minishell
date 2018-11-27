@@ -35,7 +35,7 @@ all: $(NAME)
 
 debug:
 	make -C libft	
-	$(CC) $(FLAGS) $(FILES) $(INCLUDE) $(LIBS) -o $(NAME) $(BUGGER)
+	$(CC) -g $(FLAGS) $(FILES) $(INCLUDE) $(LIBS) -o $(NAME)
 
 $(NAME):
 	make -C libft

@@ -83,6 +83,8 @@ char        *find_path(t_env *env)  //here need to find if the first argument is
 
 	i = 0;
 	abs_path = NULL;
+	directory = NULL;
+	temp = NULL;
 	path_list = assemble_env_list("PATH", ':', env->environ);
 	while (path_list[i] != NULL)
 	{
@@ -95,12 +97,13 @@ char        *find_path(t_env *env)  //here need to find if the first argument is
 			//produce complete path with executable at end
 			//free path_list at end
 			free_2d_char(path_list);
+			closedir(directory);
 			return(abs_path);
 		}
 		closedir(directory);
 		i++;
 	}
 	free_2d_char(path_list);
+	closedir(directory);
 	return (NULL);
 }
-

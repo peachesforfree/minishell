@@ -46,6 +46,7 @@ void		deconstruct(t_env *env)
 	//clear and free environ_ptr ?
 	free_list(env->arguments);
 	//free and clear argument_ptr ?
+	ft_bzero(env, sizeof(env));
 }
 
 void		free_2d_char(char **str)

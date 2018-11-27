@@ -54,6 +54,7 @@ int         execute_command(t_env *env)
 	//t_list  *temp;
 
 	ret = 0;
+	path = NULL;
 	argv_ptr = env->argument_ptr;
 	if (argv_ptr[0] != NULL && is_builtin(argv_ptr[0]))
 		ret = (g_func[is_builtin(argv_ptr[0])])(env, argv_ptr);
@@ -63,11 +64,11 @@ int         execute_command(t_env *env)
 		{
 			forkin_time(argv_ptr[0], argv_ptr, env->environ_ptr);
 		}
-		path = NULL;
 		path = find_path(env);
 		if ((access(path, X_OK) == 0))			//checks if the executable is in path
 			forkin_time(path, env->argument_ptr, env->environ_ptr);
  		free(path);
+		path = NULL;
 	}
 	else
 		printf("Error path not found\n");

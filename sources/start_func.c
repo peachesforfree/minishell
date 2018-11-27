@@ -49,20 +49,3 @@ void        env_init(t_env *env, char **environ)
 	env->argument_count = 0;
 	env->error_message = 0;
 }
-
-void        free_command_list(t_env *env)
-{
-	t_list      *current;
-	t_list      *last;
-
-	current = env->arguments;
-	while (current != NULL)
-	{
-		last = current;
-		current = current->next;
-		ft_bzero(last->content, last->content_size);
-		free(last->content);
-		ft_bzero(last, sizeof(t_list));
-		free(last);
-	}
-}
