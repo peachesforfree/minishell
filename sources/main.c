@@ -32,17 +32,20 @@ int			event_loop(t_env *env)
 int			main(int argc, char **argv, char **environ)
 {
 	t_env	env;
+	int		ret;
 	(void)argc;
 	(void)argv;
 
+	ret = 0;
 	env_init(&env, environ);
 	if (event_loop(&env) < 0)
+		ret = -1;
+	deconstruct(&env);
+	while (1)
 	{
-		//deconstruct();
-		return (-1);
+		
 	}
-	//deconstruct()
-	return (0);
+	return (ret);
 }
 
 
@@ -51,4 +54,7 @@ int			main(int argc, char **argv, char **environ)
  *              fix the ENV espansion (only chooses the first item in the list)     Read notes command+parse.c Line 51
  *              free everything
  *              Make file ... check other make files how to pre or post pend ... need to prepend the sources directory
+ * 				
+ * 				why is copy environ copying so many times?
+ * 				need to check and free char_ptr_from list before allocating new pointer.
  * **********************/

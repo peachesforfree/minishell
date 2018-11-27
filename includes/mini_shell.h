@@ -81,4 +81,8 @@ t_list      *env_expansion(t_env *env, t_list *list);
 int     ft_cd(t_env *env, char **argv_ptr);
 int     directory_check(char **argv_ptr);
 t_list    *pwd_swap(t_env *env);
+void		deconstruct(t_env *env);
+void		free_2d_char(char **str);
+
+
 #endif

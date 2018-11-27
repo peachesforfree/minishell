@@ -22,7 +22,8 @@ FILES = sources/main.c \
 		sources/echo.c \
 		sources/dir_read.c \
 		sources/command_parse.c \
-		sources/cd.c
+		sources/cd.c \
+		sources/free.c
 
 LIBS = libft/libft.a
 
