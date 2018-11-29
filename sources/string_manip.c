@@ -12,11 +12,11 @@
 
 #include "../includes/mini_shell.h"
 
-char        **tlst_to_char_arry(t_list *list)
+char			**tlst_to_char_arry(t_list *list)
 {
-	char    **temp;
-	int     count;
-	t_list  *current;
+	char	**temp;
+	int		count;
+	t_list	*current;
 
 	count = 0;
 	current = list;
@@ -38,13 +38,13 @@ char        **tlst_to_char_arry(t_list *list)
 	return (temp);
 }
 
-char        **assemble_env_list(char *str, char d, t_list *list)
+char			**assemble_env_list(char *str, char d, t_list *list)	//shorten by 6 lines
 {
-	char    **result;
-	char    *temp;
-	int     temp_len;
-	int     word_count;
-	int     i;
+	char		**result;
+	char		*temp;
+	int			temp_len;
+	int			word_count;
+	int			i;
 
 	i = 0;
 	result = NULL;
@@ -58,7 +58,7 @@ char        **assemble_env_list(char *str, char d, t_list *list)
 				return (NULL);
 			word_count = char_count(temp, d);
 			result = (char**)ft_memalloc(sizeof(char*) * (word_count + 1));
-			while(temp[0] != '\0' && i < word_count)
+			while (temp[0] != '\0' && i < word_count)
 			{
 				temp_len = ft_strchr(temp, d) - temp;
 				result[i] = ft_strnew(temp_len);
@@ -73,17 +73,21 @@ char        **assemble_env_list(char *str, char d, t_list *list)
 	return (result);
 }
 
-char        *find_path(t_env *env)  //here need to find if the first argument is an alias for what is in the paths
+void			find_path_misc(char **path_list, DIR *directory)
 {
-	char            **path_list;
-	DIR             *directory;
-	char            *abs_path;
-	t_list          *temp;
-	int             i;
+	free_2d_char(path_list);
+	closedir(directory);
+}
+
+char			*find_path(t_env *env)
+{
+	char	**path_list;
+	DIR		*directory;
+	char	*abs_path;
+	t_list	*temp;
+	int		i;
 
 	i = 0;
-	abs_path = NULL;
-	directory = NULL;
 	temp = NULL;
 	path_list = assemble_env_list("PATH", ':', env->environ);
 	while (path_list[i] != NULL)
@@ -94,16 +98,12 @@ char        *find_path(t_env *env)  //here need to find if the first argument is
 			temp = env->arguments;
 			abs_path = ft_strjoin(path_list[i], "/");
 			abs_path = ft_strnjoin(abs_path, temp->content, 1);
-			//produce complete path with executable at end
-			//free path_list at end
-			free_2d_char(path_list);
-			closedir(directory);
-			return(abs_path);
+			find_path_misc(path_list, directory);
+			return (abs_path);
 		}
 		closedir(directory);
 		i++;
 	}
-	free_2d_char(path_list);
-	closedir(directory);
+	find_path_misc(path_list, directory);
 	return (NULL);
 }
