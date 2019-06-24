@@ -26,6 +26,15 @@ int			event_loop(t_env *env)
 		if (parse_command_line(env) < 0)
 			printf("Error message\n");
 		ret = execute_command(env);
+		if (ret == -2)
+		{
+			if (env->argument_ptr[0] != NULL)
+				printf("command not found: %s\n", env->argument_ptr[0]);
+			ret = 0;
+		}
+		//exit returns -1 ... maybe make an exit() function for that specific command?
+		if (ret == -1)
+			ret = 0;
 	}
 	return (0);
 }

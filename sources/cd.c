@@ -29,6 +29,7 @@ t_list    *pwd_swap(t_env *env)
 	return (pwd);
 }
 
+// directory check not working with 	/nfs/2016/s/sbalcort/projects
 int     directory_check(char **argv_ptr)
 {
 	char    *temp;

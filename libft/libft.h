@@ -33,6 +33,28 @@ typedef struct		s_dblist
 	void			*content;
 }					t_dblist;
 
+typedef struct		s_node
+{
+	void			*content;
+	struct s_node	*next;
+}					t_node;
+
+typedef struct		s_queue
+{
+	struct s_node	*first;
+	struct s_node	*last;
+}					t_queue;
+
+/*
+**	Queue
+*/
+void		*peek(t_queue *queue);
+void		*dequeue(t_queue *queue);
+void		enqueue(t_queue *queue, void *content);
+t_queue		*init(void);
+t_node		*alloc_node(void *stuff);
+int			isempty(t_queue *queue);
+
 t_dblist			*ft_dblist_new(void);
 t_dblist			*double_insert_after(t_dblist *current);
 char				*ft_fronttrim(char *string);

@@ -86,19 +86,23 @@ SRCS = ft_atoi.c \
 	   ft_dblist_after.c \
 	   ft_fronttrim.c \
 	   ft_dblist_free.c \
-	   ft_dblist_bridge.c
+	   ft_dblist_bridge.c \
+	   ft_alloc_node.c \
+	   ft_queue.c
 
 OBJ = $(SRCS:%.c=%.o)
 
 $(NAME):
-	$(CC) $(CFLAGS) $(SRCS)
-	ar rc $(NAME) $(OBJ)
-	ranlib $(NAME)
-	
+	@echo "compiling LIBFT"
+	@$(CC) $(CFLAGS) $(SRCS)
+	@ar rc $(NAME) $(OBJ)
+	@ranlib $(NAME)
+	@$(DONE)
+
 all: $(NAME)
 
 clean:
-	$(RM) $(OBJ)
+	@$(RM) $(OBJ)
 
 fclean:	clean	
 	@$(RM) $(NAME)

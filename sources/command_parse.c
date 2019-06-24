@@ -89,7 +89,9 @@ int        parse_command_line(t_env *env)
 	string_split_list(&tokens, env->buffer);
 	tokens = env_expansion(env, tokens);
 	if (env->arguments != NULL)
+	{
 		free_list(env->arguments);
+	}
 	env->arguments = tokens;
 	if (env->argument_ptr != NULL)
 	{

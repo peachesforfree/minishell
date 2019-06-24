@@ -21,6 +21,7 @@ void		*ft_realloc(void *src, size_t newsize)
 	if (newsize <= sizeof(src))
 		return (src);
 	new = ft_memalloc(newsize);
-	ft_memmove(new, src, sizeof(src));
+	ft_memmove(src, new, sizeof(src));
+	ft_bzero(src, sizeof(src));
 	return ((void*)new);
 }

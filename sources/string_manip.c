@@ -75,8 +75,10 @@ char			**assemble_env_list(char *str, char d, t_list *list)	//shorten by 6 lines
 
 void			find_path_misc(char **path_list, DIR *directory)
 {
+
 	free_2d_char(path_list);
-	closedir(directory);
+	(void)directory;
+	// closedir(directory);
 }
 
 char			*find_path(t_env *env)
@@ -99,6 +101,7 @@ char			*find_path(t_env *env)
 			abs_path = ft_strjoin(path_list[i], "/");
 			abs_path = ft_strnjoin(abs_path, temp->content, 1);
 			find_path_misc(path_list, directory);
+			closedir(directory);
 			return (abs_path);
 		}
 		closedir(directory);
